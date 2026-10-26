@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulado Interativo de Inglês - 9º Ano</title>
+  <style>
+    /* Reset & Base Styles */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #002147;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #000;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    /* Scrollbar Estilizada */
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 5px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #dc2626;
+      border-radius: 5px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #b91c1c;
+    }
+
+    /* Header e Navegação */
+    header {
+      width: 100%;
+      max-width: 850px;
+      margin-bottom: 20px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .logo {
+      max-width: 180px;
+      height: auto;
+      margin-bottom: 15px;
+      display: block;
+      border: 3px solid #dc2626;
+      border-radius: 10px;
+      background-color: #001026;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    h1 {
+      color: #ffffff;
+      margin-bottom: 15px;
+      font-size: 1.8rem;
+    }
+
+    .nav-grid {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .nav-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 6px;
+      border: 2px solid #ffffff;
+      background-color: #001530;
+      color: #ffffff;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .nav-btn:hover {
+      background-color: #003366;
+    }
+
+    .nav-btn.active {
+      border-color: #f59e0b;
+      box-shadow: 0 0 8px #f59e0b;
+    }
+
+    .nav-btn.correct {
+      background-color: #16a34a !important;
+      border-color: #16a34a !important;
+      color: #fff;
+    }
+
+    .nav-btn.incorrect {
+      background-color: #dc2626 !important;
+      border-color: #dc2626 !important;
+      color: #fff;
+    }
+
+    /* Container Principal */
+    .container {
+      background-color: #ffffff;
+      border: 3px solid #dc2626;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 850px;
+      padding: 30px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+
+    .question-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 10px;
+    }
+
+    .question-title {
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: #000;
+    }
+
+    /* Pinned Text (Texto Fixo com Scroll) */
+    .pinned-text-box {
+      max-height: 200px;
+      overflow-y: auto;
+      background-color: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-left: 4px solid #dc2626;
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: #000;
+    }
+
+    .pinned-text-box h4 {
+      margin-bottom: 8px;
+      color: #dc2626;
+    }
+
+    /* Enunciado */
+    .statement {
+      font-size: 1.05rem;
+      line-height: 1.6;
+      margin-bottom: 20px;
+      color: #000;
+      font-weight: 500;
+    }
+
+    /* Opções de Resposta */
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 25px;
+    }
+
+    .option-item {
+      display: flex;
+      align-items: flex-start;
+      padding: 12px 15px;
+      border: 2px solid #cbd5e1;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.2s, border-color 0.2s;
+      background-color: #fff;
+    }
+
+    .option-item:hover {
+      background-color: #f1f5f9;
+      border-color: #94a3b8;
+    }
+
+    .option-item input[type="radio"] {
+      margin-top: 4px;
+      margin-right: 12px;
+      cursor: pointer;
+    }
+
+    .option-text {
+      font-size: 1rem;
+      color: #000;
+      line-height: 1.4;
+    }
+
+    .option-item.selected {
+      border-color: #dc2626;
+      background-color: #fef2f2;
+    }
+
+    .option-item.correct-bg {
+      background-color: #dcfce7 !important;
+      border-color: #16a34a !important;
+    }
+
+    .option-item.incorrect-bg {
+      background-color: #fee2e2 !important;
+      border-color: #dc2626 !important;
+    }
+
+    /* Justificativa / Feedback */
+    .feedback-box {
+      display: none;
+      background-color: #f8fafc;
+      border-left: 4px solid #0284c7;
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: #000;
+    }
+
+    .feedback-box.show {
+      display: block;
+    }
+
+    .feedback-box strong {
+      color: #0284c7;
+    }
+
+    /* Botões de Ação na Ordem Obrigatória: [ Next ] [ Check ] [ Previous ] */
+    .action-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .btn {
+      background-color: #dc2626;
+      color: #ffffff;
+      border: none;
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      flex: 1;
+      max-width: 150px;
+      text-align: center;
+    }
+
+    .btn:hover {
+      background-color: #b91c1c;
+    }
+
+    .btn:disabled {
+      background-color: #9ca3af;
+      cursor: not-allowed;
+    }
+
+    .btn-finish {
+      background-color: #16a34a;
+      max-width: 200px;
+    }
+
+    .btn-finish:hover {
+      background-color: #15803d;
+    }
+
+    /* Modal de Resultado Final */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.75);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal-content {
+      background-color: #ffffff;
+      border: 3px solid #dc2626;
+      border-radius: 10px;
+      max-width: 650px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 30px;
+      color: #000;
+    }
+
+    .modal-header {
+      text-align: center;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 10px;
+    }
+
+    .modal-header h2 {
+      color: #dc2626;
+      font-size: 1.8rem;
+    }
+
+    .score-display {
+      font-size: 1.5rem;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 15px;
+      color: #0f172a;
+    }
+
+    .stats-container {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 20px;
+      background-color: #f8fafc;
+      padding: 15px;
+      border-radius: 8px;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.3rem;
+      font-weight: bold;
+    }
+
+    .stat-value.correct { color: #16a34a; }
+    .stat-value.incorrect { color: #dc2626; }
+
+    .diagnostics-title {
+      font-size: 1.1rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #0f172a;
+    }
+
+    .diagnostics-list {
+      list-style-type: disc;
+      padding-left: 20px;
+      margin-bottom: 25px;
+      line-height: 1.6;
+    }
+
+    .modal-footer {
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 15px;
+      }
+      .action-buttons {
+        flex-direction: row;
+      }
+      .btn {
+        padding: 10px 10px;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <img src="master.png" alt="Logo Master" class="logo" onerror="this.onerror=null; this.src='https://placehold.co/180x60/001026/ffffff?text=LOGO+MASTER';">
+    <h1>Simulado de Língua Inglesa - 9º Ano</h1>
+    <div class="nav-grid" id="nav-grid">
+      <!-- Botões de 1 a 10 gerados via JS -->
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="question-header">
+      <span class="question-title" id="question-title">Questão 1 de 10</span>
+    </div>
+
+    <!-- Pinned Text (Exibido nas Questões 1, 2 e 3) -->
+    <div class="pinned-text-box" id="pinned-text-box" style="display: none;">
+      <h4>Texto Base:</h4>
+      <p id="pinned-text-content"></p>
+    </div>
+
+    <!-- Enunciado -->
+    <div class="statement" id="statement-text">
+      <!-- Enunciado será carregado aqui -->
+    </div>
+
+    <!-- Opções -->
+    <div class="options-list" id="options-list">
+      <!-- Opções serão carregadas aqui -->
+    </div>
+
+    <!-- Justificativa -->
+    <div class="feedback-box" id="feedback-box">
+      <strong>Justificativa:</strong> <span id="feedback-text"></span>
+    </div>
+
+    <!-- Botões de Ação: [ Next ] [ Check ] [ Previous ] -->
+    <div class="action-buttons">
+      <button class="btn" id="btn-next" onclick="nextQuestion()">Next</button>
+      <button class="btn" id="btn-check" onclick="checkAnswer()">Check</button>
+      <button class="btn" id="btn-prev" onclick="prevQuestion()">Previous</button>
+    </div>
+  </main>
+
+  <!-- Modal de Resultado Final -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Resultado do Simulado</h2>
+      </div>
+      <div class="score-display" id="score-display">
+        Sua Nota: 0,0 / 10,0
+      </div>
+      <div class="stats-container">
+        <div class="stat-item">
+          <div>Acertos</div>
+          <div class="stat-value correct" id="stat-correct">0 (0%)</div>
+        </div>
+        <div class="stat-item">
+          <div>Erros</div>
+          <div class="stat-value incorrect" id="stat-incorrect">0 (0%)</div>
+        </div>
+      </div>
+      <div class="diagnostics-title">Diagnóstico e Recomendações Pedagógicas:</div>
+      <ul class="diagnostics-list" id="diagnostics-list">
+        <!-- Recomendações dinâmicas -->
+      </ul>
+      <div class="modal-footer">
+        <button class="btn btn-finish" onclick="restartQuiz()">Refazer Simulado</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // TEXTO BASE PARA AS QUESTÕES 1, 2 E 3 (B1 CEFR - Global Warming and Its Consequences Now)
+    const textBase123 = `"Global Warming and Its Consequences Now"\n\n` +
+      `Global warming is no longer a distant threat; it is an active reality transforming ecological systems across the world today. Recent data released by the Intergovernmental Panel on Climate Change (IPCC) and the World Meteorological Organization (WMO) reveal that global surface temperatures have risen sharply, driving severe weather anomalies. Heatwaves, mega-droughts, and intense tropical storms now happen with unprecedented frequency, threatening urban infrastructure, food supply chains, and public health.\n\n` +
+      `Environmental experts emphasize the necessity of immediate mitigation actions. A climate specialist from the United Nations stated during a recent global summit: "If industrial nations cut greenhouse emissions rapidly, they will prevent devastating sea level rises in coastal cities." However, oceanographers also issue critical warnings regarding marine ecosystems: "If carbon emissions increased by another 10%, coral reefs across the globe would face irreversible collapse." Therefore, systemic energy transition and global cooperation are urgent requirements to protect planet Earth.`;
+
+    // ESTRUTURA DOS DADOS DAS QUESTÕES DO 9º ANO
+    const rawQuestions = [
+      {
+        id: 1,
+        topic: "Compreensão Textual Avançada",
+        pinnedText: textBase123,
+        statement: "Com base nos dados fornecidos por órgãos internacionais como IPCC e WMO no texto sobre o aquecimento global atual, qual é a principal inferência em relação aos impactos socioambientais da crise climática?",
+        correctKey: "B",
+        options: {
+          A: "O aquecimento global é uma ameaça futura que afetará o planeta apenas no próximo século, sem impactos visíveis atualmente.",
+          B: "O aumento das temperaturas globais gera consequências imediatas e severas, afetando diretamente a infraestrutura urbana, o abastecimento alimentar e a saúde pública.",
+          C: "As tempestades tropicais e ondas de calor ocorrem hoje em menor quantidade devido às tecnologias de mitigação já aplicadas.",
+          D: "Os relatórios do IPCC indicam que o colapso dos recifes de coral trará benefícios econômicos para a pesca comercial.",
+          E: "A transição energética industrial tornou-se desnecessária, pois os ecossistemas marinhos se adaptaram totalmente às emissões de carbono."
+        },
+        justification: "Resposta correta: B. O texto explicita que o aquecimento global é uma realidade atual, cujos eventos extremos (ondas de calor, secas e tempestades) afetam diretamente a infraestrutura urbana, o abastecimento de alimentos e a saúde pública."
+      },
+      {
+        id: 2,
+        topic: "Análise da First Conditional no Texto",
+        pinnedText: textBase123,
+        statement: "Considere a declaração do especialista da ONU citada no texto: <b>\"If industrial nations cut greenhouse emissions rapidly, they will prevent devastating sea level rises in coastal cities.\"</b>\n\nAssinale a alternativa que explica corretamente a função e o sentido da First Conditional nessa frase:",
+        correctKey: "C",
+        options: {
+          A: "Expressar um desejo do passado que infelizmente não pôde ser realizado pelas nações desenvolvidas.",
+          B: "Apresentar uma condição impossível de ser cumprida, já que as cidades costeiras já foram destruídas.",
+          C: "Indicar uma possibilidade real e provável no futuro, em que o corte rápido de emissões levará à prevenção do aumento do nível do mar.",
+          D: "Descrever uma regra científica automática que ocorre sem relação com o tempo futuro ou ações humanas.",
+          E: "Emitir uma ordem direta e obrigatória utilizando o verbo no tempo imperativo."
+        },
+        justification: "Resposta correta: C. A First Conditional (If + Simple Present -> Will + Verb) é utilizada para comunicar fatos possíveis e prováveis no futuro, condicionando a preservação das cidades costeiras à redução das emissões."
+      },
+      {
+        id: 3,
+        topic: "Análise da Second Conditional no Texto",
+        pinnedText: textBase123,
+        statement: "Examine a advertência feita pelos oceanógrafos no segundo parágrafo: <b>\"If carbon emissions increased by another 10%, coral reefs across the globe would face irreversible collapse.\"</b>\n\nQual é a intenção comunicativa do uso da Second Conditional nessa citação?",
+        correctKey: "A",
+        options: {
+          A: "Alertar sobre um cenário hipotético e de alto risco, utilizando o passado simples e 'would' para simular as graves consequências de um aumento nas emissões.",
+          B: "Confirmar que a emissão de carbono já aumentou 10% e que os recifes de coral já colapsaram totalmente.",
+          C: "Garantir com certeza absoluta que a poluição marinha será extinta no próximo ano.",
+          D: "Demonstrar uma ação costumeira do passado que costumava acontecer todos os anos.",
+          E: "Propor uma lei ambiental aprovada por unanimidade por todos os países do mundo."
+        },
+        justification: "Resposta correta: A. A Second Conditional (If + Simple Past -> Would + Verb) expressa hipóteses e cenários virtuais/alerta no presente ou futuro, advertindo sobre a tragédia ecológica do colapso dos recifes de coral."
+      },
+      {
+        id: 4,
+        topic: "Reported Speech - Frase Afirmativa no Imperativo",
+        pinnedText: null,
+        statement: "Durante um protesto pelo clima, o coordenador ambiental disse aos manifestantes: <b>\"Reduce energy consumption and plant native trees!\"</b>\n\nAssinale a alternativa que transpõe corretamente essa instrução para o discurso indireto (Reported Speech):",
+        correctKey: "D",
+        options: {
+          A: "The environmental coordinator said that the protesters reduced energy consumption and planted native trees.",
+          B: "The environmental coordinator asked if the protesters reduce energy consumption and plant native trees.",
+          C: "The environmental coordinator told to the protesters reducing energy consumption and planting native trees.",
+          D: "The environmental coordinator told the protesters to reduce energy consumption and plant native trees.",
+          E: "The environmental coordinator ordered the protesters will reduce energy consumption now."
+        },
+        justification: "Resposta correta: D. Instruções ou ordens no imperativo afirmativo são convertidas no discurso indireto através do padrão: 'told/ordered + objeto + to + verbo na forma base' ('told the protesters to reduce... and plant...')."
+      },
+      {
+        id: 5,
+        topic: "Reported Speech - Frase Afirmativa no Present Perfect",
+        pinnedText: null,
+        statement: "Leia a declaração de um pesquisador do clima em uma coletiva de imprensa: <b>\"Glaciologists have measured significant ice melting in Greenland.\"</b>\n\nAssinale a opção que realiza a transposição correta desse enunciado para o discurso indireto (Reported Speech):",
+        correctKey: "A",
+        options: {
+          A: "The climate researcher reported that glaciologists had measured significant ice melting in Greenland.",
+          B: "The climate researcher reported that glaciologists have measured significant ice melting in Greenland.",
+          C: "The climate researcher reported that glaciologists measure significant ice melting in Greenland.",
+          D: "The climate researcher reported that glaciologists will measure significant ice melting in Greenland.",
+          E: "The climate researcher reported that glaciologists would measure significant ice melting in Greenland."
+        },
+        justification: "Resposta correta: A. Na passagem do discurso direto para o indireto, o Present Perfect ('have measured') recua obrigatoriamente um tempo verbal, transformando-se em Past Perfect ('had measured')."
+      },
+      {
+        id: 6,
+        topic: "Reported Speech - Pergunta Interrogativa com 'Will'",
+        pinnedText: null,
+        statement: "Considere a dúvida apresentada por uma estudante durante a conferência ecológica: <b>\"Will renewable energy replace fossil fuels soon?\"</b> — asked the student.\n\nAssinale a alternativa que transpõe corretamente essa pergunta para o discurso indireto (Reported Speech):",
+        correctKey: "C",
+        options: {
+          A: "The student asked if will renewable energy replace fossil fuels soon.",
+          B: "The student asked that renewable energy would replace fossil fuels soon.",
+          C: "The student asked if renewable energy would replace fossil fuels soon.",
+          D: "The student asked whether would renewable energy replace fossil fuels soon.",
+          E: "The student asked how renewable energy replaced fossil fuels."
+        },
+        justification: "Resposta correta: C. Perguntas do tipo Yes/No requerem o conector 'if' (ou 'whether'), a flexão de 'will' para 'would' e a estrutura em ordem declarativa (sujeito + verbo)."
+      },
+      {
+        id: 7,
+        topic: "Reported Speech - Pergunta Interrogativa com 'Can'",
+        pinnedText: null,
+        statement: "Examine a pergunta feita por um jornalista a um líder político: <b>\"Can global cities implement green technologies quickly?\"</b> — asked the journalist.\n\nAssinale a alternativa correta no discurso indireto (Reported Speech):",
+        correctKey: "E",
+        options: {
+          A: "The journalist asked if global cities can implement green technologies quickly.",
+          B: "The journalist asked that global cities could implement green technologies quickly.",
+          C: "The journalist asked whether could global cities implement green technologies quickly.",
+          D: "The journalist asked if could global cities implement green technologies quickly.",
+          E: "The journalist asked if global cities could implement green technologies quickly."
+        },
+        justification: "Resposta correta: E. Na transposição de perguntas com 'can', utiliza-se a conjunção 'if', recua-se o modal 'can' para 'could' e mantém-se a ordem direta da frase (sujeito + verbo)."
+      },
+      {
+        id: 8,
+        topic: "Reported Speech - Pergunta Interrogativa com 'Can'",
+        pinnedText: null,
+        statement: "Considere a indagação feita por um ativista durante o painel de sustentabilidade: <b>\"Can we stop extreme weather events through reforestation?\"</b>\n\nAssinale a opção que apresenta a estrutura gramatical perfeita no discurso indireto:",
+        correctKey: "B",
+        options: {
+          A: "The activist asked if we can stop extreme weather events through reforestation.",
+          B: "The activist asked if they could stop extreme weather events through reforestation.",
+          C: "The activist asked that they could stop extreme weather events through reforestation.",
+          D: "The activist asked whether could they stop extreme weather events through reforestation.",
+          E: "The activist asked if they will stop extreme weather events through reforestation."
+        },
+        justification: "Resposta correta: B. Ao passar para o discurso indireto: usa-se 'if', o pronome de primeira pessoa 'we' transforma-se em 'they', e o modal 'can' recua para 'could', mantendo a ordem direta."
+      },
+      {
+        id: 9,
+        topic: "Construção de Oração Condicional a partir do Contexto",
+        pinnedText: null,
+        statement: "Leia a situação real descrita abaixo:\n\n<i>Sophia wants to install solar panels on her roof, but she doesn't own the house right now.</i>\n\nDe acordo com as regras das orações condicionais (Conditionals), assinale a alternativa que formula corretamente o cenário hipotético/irreal equivalente para o presente:",
+        correctKey: "D",
+        options: {
+          A: "If Sophia owns the house, she installs solar panels every day.",
+          B: "If Sophia will own the house, she installed solar panels on her roof.",
+          C: "If Sophia had owned the house yesterday, she will install solar panels.",
+          D: "If Sophia owned the house right now, she would install solar panels on her roof.",
+          E: "If Sophia doesn't own the house, she would install solar panels on her roof."
+        },
+        justification: "Resposta correta: D. Trata-se de uma situação irreal no presente (ela não é dona da casa agora). A Second Conditional expressa esse cenário hipotético: 'If' + Simple Past ('owned') -> 'Would' + Verb ('would install')."
+      },
+      {
+        id: 10,
+        topic: "Construção de Oração Condicional a partir do Contexto",
+        pinnedText: null,
+        statement: "Leia a situação real descrita abaixo:\n\n<i>The city council plans to build a new cycle lane next month, provided that the government approves the budget.</i>\n\nAssinale a opção que expressa corretamente essa probabilidade real e provável no futuro usando a oração condicional adequada:",
+        correctKey: "A",
+        options: {
+          A: "If the government approves the budget, the city council will build a new cycle lane next month.",
+          B: "If the government approved the budget, the city council will build a new cycle lane.",
+          C: "If the government will approve the budget, the city council built a new cycle lane.",
+          D: "If the government had approved the budget, the city council would build a new cycle lane.",
+          E: "If the government doesn't approve the budget, the city council built a new cycle lane."
+        },
+        justification: "Resposta correta: A. Para eventos futuros prováveis e condicionados, aplica-se a First Conditional: oração condicional no presente simples ('if the government approves') e oração principal no futuro com 'will' ('will build')."
+      }
+    ];
+
+    // ESTADO DA APLICAÇÃO E EMBARALHAMENTO DO GABARITO (Fisher-Yates)
+    let processedQuestions = [];
+    let userAnswers = {};
+    let checkedQuestions = {};
+    let currentQuestionIndex = 0;
+
+    function shuffleArray(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function initQuizData() {
+      processedQuestions = rawQuestions.map((q) => {
+        const originalKeys = ['A', 'B', 'C', 'D', 'E'];
+        const optionsList = originalKeys.map(key => ({
+          originalKey: key,
+          text: q.options[key]
+        }));
+
+        // Embaralhamento das opções
+        const shuffledOptions = shuffleArray(optionsList);
+
+        const newLetterLabels = ['A', 'B', 'C', 'D', 'E'];
+        let mappedCorrectLetter = '';
+
+        const finalOptions = shuffledOptions.map((opt, index) => {
+          const currentLabel = newLetterLabels[index];
+          if (opt.originalKey === q.correctKey) {
+            mappedCorrectLetter = currentLabel;
+          }
+          return {
+            label: currentLabel,
+            text: opt.text,
+            originalKey: opt.originalKey
+          };
+        });
+
+        return {
+          ...q,
+          displayOptions: finalOptions,
+          correctDisplayLetter: mappedCorrectLetter
+        };
+      });
+    }
+
+    function buildNavGrid() {
+      const navGrid = document.getElementById('nav-grid');
+      navGrid.innerHTML = '';
+      for (let i = 0; i < processedQuestions.length; i++) {
+        const btn = document.createElement('button');
+        btn.className = 'nav-btn';
+        btn.id = `nav-btn-${i}`;
+        btn.innerText = i + 1;
+        btn.onclick = () => jumpToQuestion(i);
+        navGrid.appendChild(btn);
+      }
+      updateNavStatus();
+    }
+
+    function updateNavStatus() {
+      for (let i = 0; i < processedQuestions.length; i++) {
+        const btn = document.getElementById(`nav-btn-${i}`);
+        if (!btn) continue;
+        btn.classList.remove('active', 'correct', 'incorrect');
+
+        if (i === currentQuestionIndex) {
+          btn.classList.add('active');
+        }
+
+        if (checkedQuestions[i]) {
+          const isCorrect = userAnswers[i] === processedQuestions[i].correctDisplayLetter;
+          if (isCorrect) {
+            btn.classList.add('correct');
+          } else {
+            btn.classList.add('incorrect');
+          }
+        }
+      }
+    }
+
+    function renderQuestion(index) {
+      const q = processedQuestions[index];
+
+      document.getElementById('question-title').innerText = `Questão ${index + 1} de 10`;
+
+      // Pinned Text Box para Q1, Q2 e Q3
+      const pinnedBox = document.getElementById('pinned-text-box');
+      const pinnedContent = document.getElementById('pinned-text-content');
+      if (q.pinnedText) {
+        pinnedContent.innerText = q.pinnedText;
+        pinnedBox.style.display = 'block';
+      } else {
+        pinnedBox.style.display = 'none';
+      }
+
+      document.getElementById('statement-text').innerHTML = q.statement.replace(/\n/g, '<br>');
+
+      const optionsContainer = document.getElementById('options-list');
+      optionsContainer.innerHTML = '';
+
+      const isChecked = checkedQuestions[index];
+
+      q.displayOptions.forEach((opt) => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'option-item';
+
+        const radio = document.createElement('input');
+        radio.type = 'radio';
+        radio.name = `option-${index}`;
+        radio.value = opt.label;
+        radio.id = `opt-${opt.label}`;
+        radio.disabled = !!isChecked;
+
+        if (userAnswers[index] === opt.label) {
+          radio.checked = true;
+          itemDiv.classList.add('selected');
+        }
+
+        if (isChecked) {
+          if (opt.label === q.correctDisplayLetter) {
+            itemDiv.classList.add('correct-bg');
+          } else if (userAnswers[index] === opt.label) {
+            itemDiv.classList.add('incorrect-bg');
+          }
+        } else {
+          itemDiv.onclick = () => selectOption(index, opt.label);
+        }
+
+        const labelSpan = document.createElement('span');
+        labelSpan.className = 'option-text';
+        labelSpan.innerHTML = `<strong>${opt.label})</strong> ${opt.text}`;
+
+        itemDiv.appendChild(radio);
+        itemDiv.appendChild(labelSpan);
+        optionsContainer.appendChild(itemDiv);
+      });
+
+      const feedbackBox = document.getElementById('feedback-box');
+      const feedbackText = document.getElementById('feedback-text');
+      if (isChecked) {
+        let textJust = q.justification;
+        textJust = textJust.replace(/Resposta correta: [A-E]\./, `Resposta correta: ${q.correctDisplayLetter}.`);
+        feedbackText.innerText = textJust;
+        feedbackBox.classList.add('show');
+      } else {
+        feedbackBox.classList.remove('show');
+      }
+
+      const btnCheck = document.getElementById('btn-check');
+      btnCheck.disabled = !userAnswers[index] || isChecked;
+
+      const btnNext = document.getElementById('btn-next');
+      if (index === processedQuestions.length - 1) {
+        btnNext.innerText = 'Finish';
+        btnNext.classList.add('btn-finish');
+      } else {
+        btnNext.innerText = 'Next';
+        btnNext.classList.remove('btn-finish');
+      }
+
+      const btnPrev = document.getElementById('btn-prev');
+      btnPrev.disabled = index === 0;
+
+      updateNavStatus();
+    }
+
+    function selectOption(qIndex, label) {
+      if (checkedQuestions[qIndex]) return;
+      userAnswers[qIndex] = label;
+
+      const items = document.querySelectorAll('.option-item');
+      items.forEach(item => item.classList.remove('selected'));
+
+      const radio = document.getElementById(`opt-${label}`);
+      if (radio) {
+        radio.checked = true;
+        radio.closest('.option-item').classList.add('selected');
+      }
+
+      document.getElementById('btn-check').disabled = false;
+    }
+
+    function checkAnswer() {
+      if (!userAnswers[currentQuestionIndex]) return;
+      checkedQuestions[currentQuestionIndex] = true;
+      renderQuestion(currentQuestionIndex);
+    }
+
+    function jumpToQuestion(index) {
+      currentQuestionIndex = index;
+      renderQuestion(currentQuestionIndex);
+    }
+
+    function nextQuestion() {
+      if (currentQuestionIndex < processedQuestions.length - 1) {
+        currentQuestionIndex++;
+        renderQuestion(currentQuestionIndex);
+      } else {
+        finishQuiz();
+      }
+    }
+
+    function prevQuestion() {
+      if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        renderQuestion(currentQuestionIndex);
+      }
+    }
+
+    function finishQuiz() {
+      let totalCorrect = 0;
+      let topicErrors = {};
+      let topicTotals = {};
+
+      processedQuestions.forEach((q, idx) => {
+        const topic = q.topic;
+        if (!topicTotals[topic]) {
+          topicTotals[topic] = 0;
+          topicErrors[topic] = 0;
+        }
+        topicTotals[topic]++;
+
+        const userAns = userAnswers[idx];
+        if (userAns === q.correctDisplayLetter) {
+          totalCorrect++;
+        } else {
+          topicErrors[topic]++;
+        }
+      });
+
+      const totalQuestions = processedQuestions.length;
+      const totalIncorrect = totalQuestions - totalCorrect;
+      
+      // Nota final valendo 10,0
+      const score = (totalCorrect * 1.0).toFixed(1);
+
+      const correctPct = Math.round((totalCorrect / totalQuestions) * 100);
+      const incorrectPct = Math.round((totalIncorrect / totalQuestions) * 100);
+
+      document.getElementById('score-display').innerText = `Sua Nota: ${score.replace('.', ',')} / 10,0`;
+      document.getElementById('stat-correct').innerText = `${totalCorrect} (${correctPct}%)`;
+      document.getElementById('stat-incorrect').innerText = `${totalIncorrect} (${incorrectPct}%)`;
+
+      const diagnosticsList = document.getElementById('diagnostics-list');
+      diagnosticsList.innerHTML = '';
+
+      let needsRevision = false;
+
+      for (const topic in topicTotals) {
+        const errors = topicErrors[topic];
+        const total = topicTotals[topic];
+        const errorPct = (errors / total) * 100;
+
+        if (errorPct > 30) {
+          needsRevision = true;
+          const li = document.createElement('li');
+          let recommendationText = "";
+
+          if (topic.includes("Compreensão")) {
+            recommendationText = "<strong>Compreensão Textual:</strong> Reforçar a leitura analítica de textos informativos em inglês sobre o aquecimento global e suas consequências atuais.";
+          } else if (topic.includes("Reported Speech")) {
+            recommendationText = "<strong>Discurso Indireto (Reported Speech):</strong> Estudar as regras de recuo temporal em afirmativas (Present Perfect -> Past Perfect, Imperativo -> To + Verb) e perguntas (Will -> Would, Can -> Could + 'If').";
+          } else if (topic.includes("Conditional")) {
+            recommendationText = "<strong>Orações Condicionais (First & Second Conditionals):</strong> Praticar a identificação de situações prováveis e reais no futuro (First Conditional) vs. cenários hipotéticos e irreais no presente (Second Conditional).";
+          } else {
+            recommendationText = `<strong>${topic}:</strong> Recomenda-se revisar este conteúdo específico (Percentual de erro: ${Math.round(errorPct)}%).`;
+          }
+
+          li.innerHTML = recommendationText;
+          diagnosticsList.appendChild(li);
+        }
+      }
+
+      if (!needsRevision) {
+        const li = document.createElement('li');
+        li.innerHTML = "<strong>Parabéns!</strong> Você demonstrou excelente domínio em todos os tópicos avaliados (taxa de erro inferior a 30%). Continue praticando!";
+        diagnosticsList.appendChild(li);
+      }
+
+      document.getElementById('modal-overlay').style.display = 'flex';
+    }
+
+    function restartQuiz() {
+      userAnswers = {};
+      checkedQuestions = {};
+      currentQuestionIndex = 0;
+      document.getElementById('modal-overlay').style.display = 'none';
+      initQuizData();
+      buildNavGrid();
+      renderQuestion(0);
+    }
+
+    window.onload = function() {
+      initQuizData();
+      buildNavGrid();
+      renderQuestion(0);
+    };
+  </script>
+</body>
+</html>
